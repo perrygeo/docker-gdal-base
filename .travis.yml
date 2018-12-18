@@ -9,7 +9,7 @@ env:
     - REPO=perrygeo/gdal-base  # Dockerhub repository name, not github
     - COMMIT=${TRAVIS_COMMIT::8}
     - DATE=`date +%Y%m%d`
-    - TAG="$REPO:$DATE-$COMMIT"
+    - TAG="$DATE-$COMMIT"
 
 install:
     - travis_wait 30 make
