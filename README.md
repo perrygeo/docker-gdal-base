@@ -1,5 +1,7 @@
 # Docker images for geospatial applications
 
+[![Build Status](https://travis-ci.com/perrygeo/docker-gdal-base.svg?branch=master)](https://travis-ci.com/perrygeo/docker-gdal-base)
+
 `docker-gdal-base` is a continuous integration system that
 
 * builds a reliable base image for production geospatial applications in the **GDAL** family.
