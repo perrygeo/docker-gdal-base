@@ -1,0 +1,24 @@
+services:
+  - docker
+
+env:
+  global:
+    # The following secret must be set
+    # DOCKER_PASS
+    - DOCKER_USER=perrygeo
+    - REPO=perrygeo/gdal-base  # Dockerhub repository name, not github
+    - COMMIT=${TRAVIS_COMMIT::8}
+    - DATE=`date +%Y%m%d`
+    - TAG="$REPO:$DATE-$COMMIT"
+
+install:
+    - travis_wait 30 make
+
+script:
+    - travis_wait 20 make test
+
+deploy:
+  provider: script
+  script: bash docker-push.sh
+  on:
+      branch: master
