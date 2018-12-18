@@ -12,10 +12,10 @@ env:
     - TAG="$DATE-$COMMIT"
 
 install:
-    - travis_wait 30 make
+    - travis_wait 40 make
 
 script:
-    - travis_wait 20 make test
+    - make test
 
 deploy:
   provider: script
