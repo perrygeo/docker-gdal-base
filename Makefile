@@ -6,10 +6,11 @@ all: build
 
 build:
 	docker build --tag perrygeo/gdal-base:$(TAG) --file Dockerfile .
+	docker tag perrygeo/gdal-base:$(TAG) perrygeo/gdal-base:latest
 
 test: build
 	# Test image inheritance and multistage builds
-	cd tests && docker build --tag test-gdal-base-multistage --file Dockerfile.test .
+	cd tests && docker build -e TAG=$(TAG) --tag test-gdal-base-multistage --file Dockerfile.test .
 	docker run --rm \
 		--volume $(shell pwd)/:/app \
 		test-gdal-base-multistage \
@@ -21,8 +22,7 @@ test: build
 		/app/tests/run_tests.sh
 
 shell: build
-	docker run \
+	docker run --rm -it \
 		--volume $(shell pwd)/:/app \
-		--rm -it --tty \
 		perrygeo/gdal-base:$(TAG) \
 		/bin/bash

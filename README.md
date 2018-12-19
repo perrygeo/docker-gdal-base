@@ -11,7 +11,7 @@
 * are up-to-date with recent versions of core libraries, built from source code for full control.
 * is optimized for (but not obsessed with) runtime speed and small image size.
 * has a reasonably full set of configuration options and drivers.
-* is released and tested regularly, both with an automated test suite and in production systems.
+* is tested regularly, both with an automated test suite and in production systems.
 * remain freely available.
 * for this base image,
     - leverage caching by using separate `RUN` steps.
