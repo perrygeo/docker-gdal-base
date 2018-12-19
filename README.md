@@ -65,7 +65,7 @@ You can set it as an alias to save typing
 
 ```bash
 function with-gdal-base {
-    docker run --rm -it --volume $(pwd)/:/data perrygeo/gdal-base:latest /bin/bash -c "$@"
+    docker run --rm -it --volume $(pwd)/:/data perrygeo/gdal-base:latest "$@"
 }
 
 with-gdal-base gdalinfo /data/your.tif
