@@ -24,14 +24,14 @@ ENV SQLITE_VERSION 3250200
 
 RUN wget -q https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz
 RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
-RUN wget -q http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
-RUN wget -q http://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
+RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
+RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
 RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/openjpeg/archive/v${OPENJPEG_VERSION}.tar.gz
 # TODO remove RC1
-RUN wget -q http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}rc1.tar.gz
+RUN wget -q https://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}rc1.tar.gz
 RUN wget -q https://www.sqlite.org/2018/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
-RUN wget -q http://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
+RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
 
 RUN tar xzf libwebp-${WEBP_VERSION}.tar.gz && \
     cd libwebp-${WEBP_VERSION} && \
