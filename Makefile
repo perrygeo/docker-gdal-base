@@ -11,7 +11,8 @@ build:
 test:
 	# TODO fix https://api.travis-ci.com/v3/job/166029093/log.txt
 	# # Test image inheritance and multistage builds
-	# cd tests && docker build -e TAG=$(TAG) --tag test-gdal-base-multistage --file Dockerfile.test .
+	# # Problem: Dockerfile should be FROM ???, need to build against TAG from the build step
+	# cd tests && docker build --tag test-gdal-base-multistage --file Dockerfile.test .
 	# docker run --rm \
 	# 	--volume $(shell pwd)/:/app \
 	# 	test-gdal-base-multistage \
