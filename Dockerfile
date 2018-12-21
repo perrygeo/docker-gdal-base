@@ -1,6 +1,8 @@
-# ---------------------------------------------------------------------------#
+#----------------------------------- #
 # gdal-base image with full build deps
-# ---------------------------------------------------------------------------#
+# github: perrygeo/docker-gdal-base
+# docker: perrygeo/gdal-base
+#----------------------------------- #
 FROM python:3.6-slim-stretch as builder
 
 RUN apt-get update
@@ -17,10 +19,10 @@ ENV GDAL_VERSION 2.4.0
 ENV GEOS_VERSION 3.7.1
 ENV OPENJPEG_VERSION 2.3.0
 ENV PROJ_VERSION 5.2.0
-ENV WEBP_VERSION 1.0.0
-ENV ZSTD_VERSION 1.3.4
 ENV SPATIALITE_VERSION 4.3.0a
 ENV SQLITE_VERSION 3250200
+ENV WEBP_VERSION 1.0.0
+ENV ZSTD_VERSION 1.3.4
 
 RUN wget -q https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz
 RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
@@ -28,36 +30,40 @@ RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2
 RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
 RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/openjpeg/archive/v${OPENJPEG_VERSION}.tar.gz
-# TODO remove RC1
-RUN wget -q https://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}rc1.tar.gz
+RUN wget -q https://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
 RUN wget -q https://www.sqlite.org/2018/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
 RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
 
 RUN tar xzf libwebp-${WEBP_VERSION}.tar.gz && \
     cd libwebp-${WEBP_VERSION} && \
-    CFLAGS="-O2 -Wl,-S" ./configure && \
-    make -j${CPUS} && make install
+    CFLAGS="-O2 -Wl,-S" ./configure --enable-silent-rules && \
+    echo "building WEBP ${WEBP_VERSION}..." \
+    make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -zxf zstd-${ZSTD_VERSION}.tar.gz \
     && cd zstd-${ZSTD_VERSION} \
-    && make -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
-    && make install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
+    && echo "building ZSTD ${ZSTD_VERSION}..." \
+    && make --quiet -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
+    && make --quiet install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
 
 RUN tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
     && cd geos-${GEOS_VERSION} \
     && ./configure --prefix=/usr/local \
-    && make -j${CPUS} && make install
+    && echo "building geos ${GEOS_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -xzf proj-${PROJ_VERSION}.tar.gz \
     && cd proj-${PROJ_VERSION} \
     && ./configure --prefix=/usr/local \
-    && make -j${CPUS} && make install
+    && echo "building proj ${PROJ_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -zxf openjpeg-${OPENJPEG_VERSION}.tar.gz \
     && cd openjpeg-${OPENJPEG_VERSION} \
     && mkdir build && cd build \
     && cmake .. -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
-    && make -j${CPUS} && make install
+    && echo "building openjpeg ${OPENJPEG_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -xzf curl-${CURL_VERSION}.tar.gz && cd curl-${CURL_VERSION} \
     && ./configure --prefix=/usr/local \
@@ -74,16 +80,7 @@ RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${S
     && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-# TODO SFCGAL, requires boost libraries
-# ENV SFCGAL_VERSION 1.3.0
-# RUN wget -q -O sfcgal-${SFCGAL_VERSION}.tar.gz https://github.com/Oslandia/SFCGAL/archive/v${SFCGAL_VERSION}.tar.gz
-# RUN tar -xzf sfcgal-${SFCGAL_VERSION}.tar.gz && cd SFCGAL-${SFCGAL_VERSION} \
-#       && mkdir build && cd build \
-#       && echo "building SFCGAL ${SFCGAL_VERSION}..." \
-#       && cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-#       && make --quiet -j${CPUS} && make --quiet install
-
-RUN tar -xzf gdal-${GDAL_VERSION}rc1.tar.gz && cd gdal-${GDAL_VERSION} && \
+RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_VERSION} && \
     ./configure \
         --disable-debug \
         --disable-static \

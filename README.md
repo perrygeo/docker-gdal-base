@@ -31,7 +31,7 @@ The following versions built from source:
 
 ```
 CURL 7.61.1
-GDAL 2.4.0rc1
+GDAL 2.4.0
 GEOS 3.7.1
 OPENJPEG 2.3.0
 PROJ 5.2.0
