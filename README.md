@@ -122,8 +122,8 @@ for donating the computing resources to support open source projects such as thi
 
 ## Contributing
 
-Ideas for additional drivers or software? Bug fixes? Please let me know.
-If you're into Github, create a pull request on this repo. Otherwise, send me an email at matt@perrygeo.com.
+Ideas for additional drivers or software? Bug fixes? Please create a pull request on this repo with:
+
 
 Either way, I'll ask for
 
