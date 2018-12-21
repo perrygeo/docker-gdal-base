@@ -124,9 +124,6 @@ for donating the computing resources to support open source projects such as thi
 
 Ideas for additional drivers or software? Bug fixes? Please create a pull request on this repo with:
 
-
-Either way, I'll ask for
-
 * a description.
 * code + an automated test for the new functionality.
 * results of trying it in production.
