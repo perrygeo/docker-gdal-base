@@ -12,7 +12,7 @@ env:
     - TAG="$DATE-$COMMIT"
 
 install:
-    - travis_wait 40 make
+    - travis_wait 49 make
 
 script:
     - make test
