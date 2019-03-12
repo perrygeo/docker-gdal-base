@@ -18,9 +18,9 @@ ENV CURL_VERSION 7.61.1
 ENV GDAL_VERSION 2.4.0
 ENV GEOS_VERSION 3.7.1
 ENV OPENJPEG_VERSION 2.3.0
-ENV PROJ_VERSION 5.2.0
+ENV PROJ_VERSION 6.0.0
 ENV SPATIALITE_VERSION 4.3.0a
-ENV SQLITE_VERSION 3250200
+ENV SQLITE_VERSION 3270200
 ENV WEBP_VERSION 1.0.0
 ENV ZSTD_VERSION 1.3.4
 
@@ -31,7 +31,8 @@ RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz
 RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz
 RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/openjpeg/archive/v${OPENJPEG_VERSION}.tar.gz
 RUN wget -q https://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz
-RUN wget -q https://www.sqlite.org/2018/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
+RUN wget -q https://www.sqlite.org/2019/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
+#           https://www.sqlite.org/2019/sqlite-autoconf-3270200.tar.gz
 RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
 
 RUN tar xzf libwebp-${WEBP_VERSION}.tar.gz && \
@@ -52,11 +53,22 @@ RUN tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
     && echo "building geos ${GEOS_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
+RUN tar -xzvf sqlite-autoconf-${SQLITE_VERSION}.tar.gz && cd sqlite-autoconf-${SQLITE_VERSION} \
+    && ./configure --prefix=/usr/local \
+    && echo "building SQLITE ${SQLITE_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
+
 RUN tar -xzf proj-${PROJ_VERSION}.tar.gz \
     && cd proj-${PROJ_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building proj ${PROJ_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
+
+# Doesn't appear to be updated for proj6, not worth holding up the show
+# RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${SPATIALITE_VERSION} \
+#     && ./configure --prefix=/usr/local \
+#     && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
+#     && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -zxf openjpeg-${OPENJPEG_VERSION}.tar.gz \
     && cd openjpeg-${OPENJPEG_VERSION} \
@@ -68,16 +80,6 @@ RUN tar -zxf openjpeg-${OPENJPEG_VERSION}.tar.gz \
 RUN tar -xzf curl-${CURL_VERSION}.tar.gz && cd curl-${CURL_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building CURL ${CURL_VERSION}..." \
-    && make --quiet -j${CPUS} && make --quiet install
-
-RUN tar -xzvf sqlite-autoconf-${SQLITE_VERSION}.tar.gz && cd sqlite-autoconf-${SQLITE_VERSION} \
-    && ./configure --prefix=/usr/local \
-    && echo "building SQLITE ${SQLITE_VERSION}..." \
-    && make --quiet -j${CPUS} && make --quiet install
-
-RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${SPATIALITE_VERSION} \
-    && ./configure --prefix=/usr/local \
-    && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_VERSION} && \
