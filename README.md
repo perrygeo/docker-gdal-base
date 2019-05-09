@@ -30,15 +30,15 @@ Dockerfiles are based on [`python:3.6-slim-stretch`](https://github.com/docker-l
 The following versions built from source:
 
 ```
-CURL 7.61.1
-GDAL 2.4.0
-GEOS 3.7.1
-OPENJPEG 2.3.0
-PROJ 5.2.0
-SPATIALITE 4.3.0a
-SQLITE 3250200
-WEBP 1.0.0
-ZSTD 1.3.4
+CURL_VERSION 7.61.1
+GDAL_VERSION 3.0.0
+GEOS_VERSION 3.7.2
+OPENJPEG_VERSION 2.3.1
+PROJ_VERSION 6.0.0
+SPATIALITE_VERSION 4.3.0a
+SQLITE_VERSION 3270200
+WEBP_VERSION 1.0.0
+ZSTD_VERSION 1.3.4
 ```
 
 ## GDAL Drivers
