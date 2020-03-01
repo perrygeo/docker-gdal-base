@@ -24,18 +24,17 @@ See [`perrygeo/gdal-base` on Dockerhub](https://hub.docker.com/r/perrygeo/gdal-b
 
 ## Packages and version numbers
 
-Dockerfiles are based on [`python:3.6-slim-stretch`](https://github.com/docker-library/python/blob/master/3.6/stretch/slim/Dockerfile) which in turn is based on `debian:stretch-slim`.
+Dockerfiles are based on [`python:3.8-slim-buster`](https://github.com/docker-library/python/blob/21d2ab0a50100ebdaf32f4bbb214bf21f857d1da/3.8/buster/slim/Dockerfile) which in turn is based on `debian:buster-slim`.
 
 
 The following versions built from source:
 
 ```
 CURL_VERSION 7.61.1
-GDAL_VERSION 3.0.0
-GEOS_VERSION 3.7.2
+GDAL_VERSION 3.0.4
+GEOS_VERSION 3.8.0
 OPENJPEG_VERSION 2.3.1
-PROJ_VERSION 6.0.0
-SPATIALITE_VERSION 4.3.0a
+PROJ_VERSION 7.0.0
 SQLITE_VERSION 3270200
 WEBP_VERSION 1.0.0
 ZSTD_VERSION 1.3.4
@@ -93,7 +92,7 @@ RUN pip uninstall cython --yes
 
 # ------ Second stage
 # Start from a clean image
-FROM python:3.6-slim-stretch as final
+FROM python:3.8-slim-buster as final
 
 # Install some required runtime libraries from apt
 RUN apt-get update \

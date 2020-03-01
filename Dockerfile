@@ -3,7 +3,7 @@
 # github: perrygeo/docker-gdal-base
 # docker: perrygeo/gdal-base
 #----------------------------------- #
-FROM python:3.6-slim-stretch as builder
+FROM python:3.8-slim-buster as builder
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
@@ -15,14 +15,16 @@ WORKDIR /tmp
 # using gdal master
 ENV CPUS 4
 ENV CURL_VERSION 7.61.1
-ENV GDAL_VERSION 3.0.2
+ENV GDAL_VERSION 3.0.4
 ENV GEOS_VERSION 3.8.0
 ENV OPENJPEG_VERSION 2.3.1
-ENV PROJ_VERSION 6.2.1
+ENV PROJ_VERSION 7.0.0
 ENV SPATIALITE_VERSION 4.3.0a
 ENV SQLITE_VERSION 3270200
 ENV WEBP_VERSION 1.0.0
 ENV ZSTD_VERSION 1.3.4
+ENV TIFF_VERSION 4.1.0
+ENV GEOTIFF_VERSION 1.5.1
 
 RUN wget -q https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz
 RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/archive/v${ZSTD_VERSION}.tar.gz
@@ -34,6 +36,7 @@ RUN wget -q https://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}
 RUN wget -q https://www.sqlite.org/2019/sqlite-autoconf-${SQLITE_VERSION}.tar.gz
 #           https://www.sqlite.org/2019/sqlite-autoconf-3270200.tar.gz
 RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
+RUN wget -q https://download.osgeo.org/proj/proj-datumgrid-1.8.zip
 
 RUN tar xzf libwebp-${WEBP_VERSION}.tar.gz && \
     cd libwebp-${WEBP_VERSION} && \
@@ -58,7 +61,21 @@ RUN tar -xzvf sqlite-autoconf-${SQLITE_VERSION}.tar.gz && cd sqlite-autoconf-${S
     && echo "building SQLITE ${SQLITE_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
+RUN wget -q https://download.osgeo.org/libtiff/tiff-${TIFF_VERSION}.tar.gz \
+    && tar -xf tiff-${TIFF_VERSION}.tar.gz \
+    && cd tiff-${TIFF_VERSION} \
+    && ./configure \
+    && make -j ${CPUS} && make install
+
+
+RUN tar -xzf curl-${CURL_VERSION}.tar.gz && cd curl-${CURL_VERSION} \
+    && ./configure --prefix=/usr/local \
+    && echo "building CURL ${CURL_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
+
+
 RUN tar -xzf proj-${PROJ_VERSION}.tar.gz \
+    && unzip proj-datumgrid-1.8.zip -d proj-${PROJ_VERSION}/data \
     && cd proj-${PROJ_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building proj ${PROJ_VERSION}..." \
@@ -70,16 +87,17 @@ RUN tar -xzf proj-${PROJ_VERSION}.tar.gz \
 #     && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
 #     && make --quiet -j${CPUS} && make --quiet install
 
+RUN wget -q http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-${GEOTIFF_VERSION}.tar.gz \
+    && tar -xf libgeotiff-${GEOTIFF_VERSION}.tar.gz \
+    && cd libgeotiff-${GEOTIFF_VERSION} \
+    && ./configure \
+    && make -j ${CPUS} && make install
+
 RUN tar -zxf openjpeg-${OPENJPEG_VERSION}.tar.gz \
     && cd openjpeg-${OPENJPEG_VERSION} \
     && mkdir build && cd build \
     && cmake .. -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
     && echo "building openjpeg ${OPENJPEG_VERSION}..." \
-    && make --quiet -j${CPUS} && make --quiet install
-
-RUN tar -xzf curl-${CURL_VERSION}.tar.gz && cd curl-${CURL_VERSION} \
-    && ./configure --prefix=/usr/local \
-    && echo "building CURL ${CURL_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
 RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_VERSION} && \
