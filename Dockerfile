@@ -60,7 +60,7 @@ RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz \
     && echo "building CURL ${CURL_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV PROJ_VERSION 7.0.1
+ENV PROJ_VERSION 7.1.1
 RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
     && tar -xzf proj-${PROJ_VERSION}.tar.gz \
     && cd proj-${PROJ_VERSION} \
@@ -86,8 +86,8 @@ RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/
     && make --quiet -j${CPUS} && make --quiet install
 
 # TODO TileDB, NetCDF, PostgreSQL, SFCGAL, ODBC, FGDB, DODS, Spatiallite
-ENV GDAL_SHORT_VERSION 3.1.0
-ENV GDAL_VERSION 3.1.0
+ENV GDAL_SHORT_VERSION 3.1.3
+ENV GDAL_VERSION 3.1.3
 RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz \
     && tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     ./configure \
