@@ -30,16 +30,26 @@ RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/arch
     && make --quiet -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
     && make --quiet install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
 
-ENV GEOS_VERSION 3.8.1
-RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
+# TODO stop using snapshot once 3.9 is released
+# ENV GEOS_VERSION 3.9.0
+# RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
+#     && tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
+#     && cd geos-${GEOS_VERSION} \
+#     && ./configure --prefix=/usr/local \
+#     && echo "building geos ${GEOS_VERSION}..." \
+#     && make --quiet -j${CPUS} && make --quiet install
+
+ENV GEOS_VERSION 20201125
+RUN wget -q https://geos.osgeo.org/snapshots/geos-${GEOS_VERSION}.tar.bz2 \
     && tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
     && cd geos-${GEOS_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building geos ${GEOS_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV SQLITE_VERSION 3270200
-RUN wget -q https://www.sqlite.org/2019/sqlite-autoconf-${SQLITE_VERSION}.tar.gz \
+ENV SQLITE_VERSION 3330000
+ENV SQLITE_YEAR 2020
+RUN wget -q https://sqlite.org/${SQLITE_YEAR}/sqlite-autoconf-${SQLITE_VERSION}.tar.gz \
     && tar -xzf sqlite-autoconf-${SQLITE_VERSION}.tar.gz && cd sqlite-autoconf-${SQLITE_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building SQLITE ${SQLITE_VERSION}..." \
@@ -53,14 +63,14 @@ RUN wget -q https://download.osgeo.org/libtiff/tiff-${LIBTIFF_VERSION}.tar.gz \
     && echo "building libtiff ${LIBTIFF_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV CURL_VERSION 7.61.1
+ENV CURL_VERSION 7.73.0
 RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz \
     && tar -xzf curl-${CURL_VERSION}.tar.gz && cd curl-${CURL_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building CURL ${CURL_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV PROJ_VERSION 7.1.1
+ENV PROJ_VERSION 7.2.0
 RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
     && tar -xzf proj-${PROJ_VERSION}.tar.gz \
     && cd proj-${PROJ_VERSION} \
@@ -68,9 +78,17 @@ RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
     && echo "building proj ${PROJ_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-# Doesn't appear to be updated for proj6, not worth holding up the show
-# ENV SPATIALITE_VERSION 4.3.0a
+ENV LIBGEOTIFF_VERSION=1.6.0
+RUN wget -q https://github.com/OSGeo/libgeotiff/releases/download/${LIBGEOTIFF_VERSION}/libgeotiff-${LIBGEOTIFF_VERSION}.tar.gz \
+    && tar -xzf libgeotiff-${LIBGEOTIFF_VERSION}.tar.gz \
+    && cd libgeotiff-${LIBGEOTIFF_VERSION} \
+    && ./configure --prefix=/usr/local \
+    && echo "building libgeotiff ${LIBGEOTIFF_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
+
+# ENV SPATIALITE_VERSION 5.0.0
 # RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
+# RUN apt-get install -y libminizip-dev
 # RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${SPATIALITE_VERSION} \
 #     && ./configure --prefix=/usr/local \
 #     && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
@@ -85,18 +103,17 @@ RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/
     && echo "building openjpeg ${OPENJPEG_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-# TODO TileDB, NetCDF, PostgreSQL, SFCGAL, ODBC, FGDB, DODS, Spatiallite
-ENV GDAL_SHORT_VERSION 3.1.3
-ENV GDAL_VERSION 3.1.3
+ENV GDAL_SHORT_VERSION 3.2.0
+ENV GDAL_VERSION 3.2.0
 RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz \
     && tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     ./configure \
     --disable-debug \
-    --disable-static \
     --prefix=/usr/local \
+    --disable-static \
     --with-curl=/usr/local/bin/curl-config \
     --with-geos \
-    --with-geotiff=internal \
+    --with-geotiff=/usr/local \
     --with-hide-internal-symbols=yes \
     --with-libtiff=/usr/local \
     --with-openjpeg \
