@@ -30,18 +30,9 @@ RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/arch
     && make --quiet -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
     && make --quiet install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
 
-# TODO stop using snapshot once 3.9 is released
-# ENV GEOS_VERSION 3.9.0
-# RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
-#     && tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
-#     && cd geos-${GEOS_VERSION} \
-#     && ./configure --prefix=/usr/local \
-#     && echo "building geos ${GEOS_VERSION}..." \
-#     && make --quiet -j${CPUS} && make --quiet install
-
-ENV GEOS_VERSION 20201125
-RUN wget -q https://geos.osgeo.org/snapshots/geos-${GEOS_VERSION}.tar.bz2 \
-    && tar -xjf geos-${GEOS_VERSION}.tar.bz2 \
+ENV GEOS_VERSION 3.9.0
+RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
+    && tar -xjf geos-${GEOS_VERSION}.tar.bz2  \
     && cd geos-${GEOS_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building geos ${GEOS_VERSION}..." \
