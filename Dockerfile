@@ -12,7 +12,8 @@ RUN apt-get install -y --no-install-recommends \
 
 WORKDIR /tmp
 
-ENV CPUS 4
+ARG $ncpus 2
+ENV CPUS ${ncpus}
 
 ENV WEBP_VERSION 1.0.0
 RUN wget -q https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz && \
@@ -30,7 +31,7 @@ RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/arch
     && make --quiet -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
     && make --quiet install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
 
-ENV GEOS_VERSION 3.9.0
+ENV GEOS_VERSION 3.9.1
 RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
     && tar -xjf geos-${GEOS_VERSION}.tar.bz2  \
     && cd geos-${GEOS_VERSION} \
@@ -61,7 +62,7 @@ RUN wget -q https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz \
     && echo "building CURL ${CURL_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV PROJ_VERSION 7.2.0
+ENV PROJ_VERSION 7.2.1
 RUN wget -q https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
     && tar -xzf proj-${PROJ_VERSION}.tar.gz \
     && cd proj-${PROJ_VERSION} \
@@ -94,10 +95,10 @@ RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/
     && echo "building openjpeg ${OPENJPEG_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV GDAL_SHORT_VERSION 3.2.0
-ENV GDAL_VERSION 3.2.0
-RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz \
-    && tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
+ENV GDAL_SHORT_VERSION 3.2.1
+ENV GDAL_VERSION 3.2.1
+RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz
+RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     ./configure \
     --disable-debug \
     --prefix=/usr/local \
@@ -116,6 +117,9 @@ RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VE
     --with-webp=/usr/local \
     --with-zstd=/usr/local \
     && echo "building GDAL ${GDAL_VERSION}..." \
-    && make --quiet -j${CPUS} && make --quiet install
+    && make -j${CPUS} && make --quiet install
 
 RUN ldconfig
+
+# https://proj.org/usage/environmentvars.html#envvar-PROJ_NETWORK
+ENV PROJ_NETWORK ON
