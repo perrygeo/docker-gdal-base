@@ -8,7 +8,7 @@ FROM python:3.8-slim-buster as builder
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
     cmake build-essential wget ca-certificates unzip pkg-config \
-    zlib1g-dev libfreexl-dev libxml2-dev
+    zlib1g-dev libfreexl-dev libxml2-dev nasm libpng-dev
 
 WORKDIR /tmp
 
@@ -30,6 +30,23 @@ RUN wget -q -O zstd-${ZSTD_VERSION}.tar.gz https://github.com/facebook/zstd/arch
     && make --quiet -j${CPUS} ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1 \
     && make --quiet install ZSTD_LEGACY_SUPPORT=0 CFLAGS=-O1
 
+ENV LIBDEFLATE_VERSION 1.7
+RUN wget -q https://github.com/ebiggers/libdeflate/archive/v${LIBDEFLATE_VERSION}.tar.gz \
+    && tar -zxf v${LIBDEFLATE_VERSION}.tar.gz \
+    && cd libdeflate-${LIBDEFLATE_VERSION} \
+    && echo "building libdeflate ${LIBDEFLATE_VERSION}..." \
+    && make -j${CPUS} \
+    && make --quiet install
+
+ENV LIBJPEG_TURBO_VERSION 2.0.5
+RUN wget -q https://github.com/libjpeg-turbo/libjpeg-turbo/archive/${LIBJPEG_TURBO_VERSION}.tar.gz \
+    && tar -zxf ${LIBJPEG_TURBO_VERSION}.tar.gz \
+    && cd libjpeg-turbo-${LIBJPEG_TURBO_VERSION} \
+    && echo "building libjpeg-turbo ${LIBJPEG_TURBO_VERSION}..." \
+    && cmake -G"Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release . \
+    && make -j${CPUS} \
+    && make --quiet install
+
 ENV GEOS_VERSION 3.9.1
 RUN wget -q https://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2 \
     && tar -xjf geos-${GEOS_VERSION}.tar.bz2  \
@@ -46,12 +63,20 @@ RUN wget -q https://sqlite.org/${SQLITE_YEAR}/sqlite-autoconf-${SQLITE_VERSION}.
     && echo "building SQLITE ${SQLITE_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV LIBTIFF_VERSION=4.1.0
+ENV LIBTIFF_VERSION=4.2.0
 RUN wget -q https://download.osgeo.org/libtiff/tiff-${LIBTIFF_VERSION}.tar.gz \
     && tar -xzf tiff-${LIBTIFF_VERSION}.tar.gz \
     && cd tiff-${LIBTIFF_VERSION} \
     && ./configure --prefix=/usr/local \
     && echo "building libtiff ${LIBTIFF_VERSION}..." \
+    && make --quiet -j${CPUS} && make --quiet install
+
+ENV NGHTTP2_VERSION 1.42.0
+RUN wget https://github.com/nghttp2/nghttp2/releases/download/v${NGHTTP2_VERSION}/nghttp2-${NGHTTP2_VERSION}.tar.gz \
+    && tar -xzf nghttp2-${NGHTTP2_VERSION}.tar.gz \
+    && cd nghttp2-${NGHTTP2_VERSION} \
+    && echo "building NGHTTP2 ${NGHTTP2_VERSION}..." \
+    && ./configure --enable-lib-only --prefix=/usr/local \
     && make --quiet -j${CPUS} && make --quiet install
 
 ENV CURL_VERSION 7.73.0
@@ -73,7 +98,7 @@ ENV LIBGEOTIFF_VERSION=1.6.0
 RUN wget -q https://github.com/OSGeo/libgeotiff/releases/download/${LIBGEOTIFF_VERSION}/libgeotiff-${LIBGEOTIFF_VERSION}.tar.gz \
     && tar -xzf libgeotiff-${LIBGEOTIFF_VERSION}.tar.gz \
     && cd libgeotiff-${LIBGEOTIFF_VERSION} \
-    && ./configure --prefix=/usr/local \
+    && ./configure --prefix=/usr/local --with-zlib \
     && echo "building libgeotiff ${LIBGEOTIFF_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
@@ -107,6 +132,8 @@ RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     --with-geotiff=/usr/local \
     --with-hide-internal-symbols=yes \
     --with-libtiff=/usr/local \
+    --with-jpeg=/usr/local \
+    --with-png \
     --with-openjpeg \
     --with-sqlite3 \
     --with-proj=/usr/local \
@@ -115,6 +142,7 @@ RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     --with-threads=yes \
     --with-webp=/usr/local \
     --with-zstd=/usr/local \
+    --with-libdeflate \
     && echo "building GDAL ${GDAL_VERSION}..." \
     && make -j${CPUS} && make --quiet install
 
