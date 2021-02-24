@@ -12,8 +12,7 @@ RUN apt-get install -y --no-install-recommends \
 
 WORKDIR /tmp
 
-ARG $ncpus 2
-ENV CPUS ${ncpus}
+ENV CPUS 2
 
 ENV WEBP_VERSION 1.0.0
 RUN wget -q https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz && \
