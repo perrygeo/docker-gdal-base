@@ -3,7 +3,7 @@
 # github: perrygeo/docker-gdal-base
 # docker: perrygeo/gdal-base
 #----------------------------------- #
-FROM python:3.8-slim-buster as builder
+FROM python:3.9-slim-buster as builder
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
