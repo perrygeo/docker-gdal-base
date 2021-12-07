@@ -24,7 +24,7 @@ See [`perrygeo/gdal-base` on Dockerhub](https://hub.docker.com/r/perrygeo/gdal-b
 
 ## Packages and version numbers
 
-Dockerfiles are based on [`python:3.8-slim-buster`](https://github.com/docker-library/python/blob/master/3.8/buster/slim/Dockerfile) which in turn is based on Debian 10/Buster.
+Dockerfiles are based on [`python:3.9-slim-buster`](https://github.com/docker-library/python/blob/master/3.9/buster/slim/Dockerfile) which in turn is based on Debian 10/Buster.
 
 The following versions built from source:
 
@@ -90,7 +90,7 @@ RUN pip uninstall cython --yes
 
 # ------ Second stage
 # Start from a clean image
-FROM python:3.8-slim-buster as final
+FROM python:3.9-slim-buster as final
 
 # Install some required runtime libraries from apt
 RUN apt-get update \
