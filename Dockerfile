@@ -1,14 +1,15 @@
 #----------------------------------- #
-# gdal-base image with full build deps
-# github: perrygeo/docker-gdal-base
-# docker: perrygeo/gdal-base
+# base geoprocessing image
+# github: seasketch/docker-gp-base
+# docker: seasketch/geoprocessing-base
 #----------------------------------- #
-FROM python:3.8-slim-buster as builder
+FROM python:3.11-slim-bullseye as builder
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
     cmake build-essential wget ca-certificates unzip pkg-config \
-    zlib1g-dev libfreexl-dev libxml2-dev nasm libpng-dev
+    zlib1g-dev libfreexl-dev libxml2-dev nasm libpng-dev autoconf \
+    libtool
 
 WORKDIR /tmp
 
@@ -102,25 +103,16 @@ RUN wget -q https://github.com/OSGeo/libgeotiff/releases/download/${LIBGEOTIFF_V
     && echo "building libgeotiff ${LIBGEOTIFF_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-# ENV SPATIALITE_VERSION 5.0.0
-# RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
-# RUN apt-get install -y libminizip-dev
-# RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${SPATIALITE_VERSION} \
-#     && ./configure --prefix=/usr/local \
-#     && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
-#     && make --quiet -j${CPUS} && make --quiet install
-
-ENV OPENJPEG_VERSION 2.3.1
-RUN wget -q -O openjpeg-${OPENJPEG_VERSION}.tar.gz https://github.com/uclouvain/openjpeg/archive/v${OPENJPEG_VERSION}.tar.gz \
-    && tar -zxf openjpeg-${OPENJPEG_VERSION}.tar.gz \
-    && cd openjpeg-${OPENJPEG_VERSION} \
-    && mkdir build && cd build \
-    && cmake .. -DBUILD_THIRDPARTY:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
-    && echo "building openjpeg ${OPENJPEG_VERSION}..." \
+ENV SPATIALITE_VERSION 5.0.0
+RUN wget -q https://www.gaia-gis.it/gaia-sins/libspatialite-${SPATIALITE_VERSION}.tar.gz
+RUN apt-get install -y libminizip-dev
+RUN tar -xzvf libspatialite-${SPATIALITE_VERSION}.tar.gz && cd libspatialite-${SPATIALITE_VERSION} \
+    && ./configure --prefix=/usr/local \
+    && echo "building SPATIALITE ${SPATIALITE_VERSION}..." \
     && make --quiet -j${CPUS} && make --quiet install
 
-ENV GDAL_SHORT_VERSION 3.2.1
-ENV GDAL_VERSION 3.2.1
+ENV GDAL_SHORT_VERSION 3.3.2
+ENV GDAL_VERSION 3.3.2
 RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz
 RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     ./configure \
@@ -134,7 +126,6 @@ RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
     --with-libtiff=/usr/local \
     --with-jpeg=/usr/local \
     --with-png \
-    --with-openjpeg \
     --with-sqlite3 \
     --with-proj=/usr/local \
     --with-rename-internal-libgeotiff-symbols=yes \
@@ -150,3 +141,6 @@ RUN ldconfig
 
 # https://proj.org/usage/environmentvars.html#envvar-PROJ_NETWORK
 ENV PROJ_NETWORK ON
+
+RUN apt-get install -y --no-install-recommends \
+    less

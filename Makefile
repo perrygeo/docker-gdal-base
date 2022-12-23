@@ -5,8 +5,8 @@ TAG ?= latest
 all: build
 
 build:
-	docker build --tag perrygeo/gdal-base:$(TAG) --file Dockerfile .
-	docker tag perrygeo/gdal-base:$(TAG) perrygeo/gdal-base:latest
+	docker build --tag seasketch/geoprocessing-base:$(TAG) --file Dockerfile .
+	docker tag seasketch/geoprocessing-base:$(TAG) seasketch/geoprocessing-base:latest
 
 test:
 	# TODO fix https://api.travis-ci.com/v3/job/166029093/log.txt
@@ -20,11 +20,11 @@ test:
 	# Test GDAL CLI, etc on the base image itself
 	docker run --rm \
 		--volume $(shell pwd)/:/app \
-		perrygeo/gdal-base:$(TAG) \
+		seasketch/geoprocessing-base:$(TAG) \
 		/app/tests/run_tests.sh
 
 shell: build
 	docker run --rm -it \
 		--volume $(shell pwd)/:/app \
-		perrygeo/gdal-base:$(TAG) \
+		seasketch/geoprocessing-base:$(TAG) \
 		/bin/bash

@@ -1,14 +1,11 @@
-# Docker images for geospatial applications
+# Docker image for seasketch geoprocessing workspace
 
-[![Build Status](https://travis-ci.com/perrygeo/docker-gdal-base.svg?branch=master)](https://travis-ci.com/perrygeo/docker-gdal-base)
+`docker-gp-base` builds a reliable base image for creating more specialized containers for geospatial applications.  It is based on `perrygeo/docker-gdal-base`
 
-`docker-gdal-base` is a continuous integration system that
-
-- builds a reliable base image for production geospatial applications in the **GDAL** family.
 - relies on the official `debian` images and direct descendants like `python`.
-- is built and distributed with the computing resources provided by github, travis-ci and dockerhub.
+- is built and distributed with the computing resources provided by github and dockerhub.
 - uses only free and open source software.
-- are up-to-date with recent versions of core libraries, built from source code for full control.
+- uses versions of core libraries required by the SeaSketch Geoprocessing library, built from source code for full control.
 - is optimized for (but not obsessed with) runtime speed and small image size.
 - has a reasonably full set of configuration options and drivers.
 - is tested regularly, both with an automated test suite and in production systems.
@@ -20,13 +17,11 @@
 - for subsequent production images that inherit from it
   - use multistage builds to minimize the final image size; you don't need carry around the entire build environment in production.
 
-See [`perrygeo/gdal-base` on Dockerhub](https://hub.docker.com/r/perrygeo/gdal-base)
+See [`seasketch/docker-gp-base` on Dockerhub](https://hub.docker.com/r/seasketch/docker-gp-base)
 
 ## Packages and version numbers
 
-Dockerfiles are based on [`python:3.8-slim-buster`](https://github.com/docker-library/python/blob/master/3.8/buster/slim/Dockerfile) which in turn is based on Debian 10/Buster.
-
-The following versions built from source:
+The following libraries built from source:
 
 ```
 WEBP_VERSION 1.0.0
@@ -36,7 +31,7 @@ LIBTIFF_VERSION 4.1.0
 CURL_VERSION 7.73.1
 PROJ_VERSION 7.2.1
 OPENJPEG_VERSION 2.3.1
-GDAL_VERSION 3.2.1
+GDAL_VERSION 3.3.2
 SQLITE_VERSION 3330000
 ```
 
@@ -53,18 +48,18 @@ To run the GDAL command line utilities on local files, on data in the current wo
 ```bash
 docker run --rm -it \
     --volume $(shell pwd)/:/data \
-    perrygeo/gdal-base:latest \
+    seasketch/docker-gp-base:latest \
     gdalinfo /data/your.tif
 ```
 
 You can set it as an alias to save typing
 
 ```bash
-function with-gdal-base {
-    docker run --rm -it --volume $(pwd)/:/data perrygeo/gdal-base:latest "$@"
+function with-gp-base {
+    docker run --rm -it --volume $(pwd)/:/data seasketch/docker-gp-base:latest "$@"
 }
 
-with-gdal-base gdalinfo /data/your.tif
+with-gp-base gdalinfo /data/your.tif
 ```
 
 ## Using the Makefile
@@ -80,7 +75,7 @@ Use a multistage build to pull your binaries and shared library objects in `/usr
 Example:
 
 ```Dockerfile
-FROM perrygeo/gdal-base:latest as builder
+FROM seasketch/docker-gp-base:latest as builder
 
 # Python dependencies that require compilation
 COPY requirements.txt .
@@ -90,7 +85,7 @@ RUN pip uninstall cython --yes
 
 # ------ Second stage
 # Start from a clean image
-FROM python:3.8-slim-buster as final
+FROM python:3.11-slim-bullseye as final
 
 # Install some required runtime libraries from apt
 RUN apt-get update \

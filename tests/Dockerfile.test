@@ -1,4 +1,4 @@
-FROM perrygeo/gdal-base:latest as builder
+FROM seasketch/geoprocessing-base:latest as builder
 
 # Python dependencies that require compilation
 RUN python -m pip install cython numpy
@@ -7,7 +7,7 @@ RUN pip uninstall cython --yes
 
 # ------ Second stage
 # Start from a clean image
-FROM python:3.6-slim-stretch as final
+FROM python:3.11-slim-bullseye as final
 
 # Install some required runtime libraries from apt
 RUN apt-get update \
