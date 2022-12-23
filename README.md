@@ -35,6 +35,8 @@ GDAL_VERSION 3.3.2
 SQLITE_VERSION 3330000
 ```
 
+GDAL 3.3.2 is used because it supports flatgeobuf files, and works with flatgeobuf JS library v3.17.4 that geoprocessing lib is locked on for now
+
 ## GDAL Drivers
 
 - `GTiff` GeoTIFF with WEBP, ZSTD compression options.
@@ -98,25 +100,3 @@ COPY --from=builder /usr/local /usr/local
 RUN ldconfig
 ```
 
-## License
-
-Docker image licensing [is a mess](https://opensource.stackexchange.com/a/7015).
-In lieu of clear best practices, I'm making the source code and the associated images on dockerhub
-available as **public domain**.
-
-There is no warranty of any kind.
-You're on your own if you choose to use any of these resources.
-If the images work for you, great!
-Please `docker pull` it, fork it, `git clone` it, download it, whatever.
-Thanks to github, travis-ci and dockerhub
-for donating the computing resources to support open source projects such as this.
-
-## Contributing
-
-Ideas for additional drivers or software? Bug fixes? Please create a pull request on this repo with:
-
-- a description.
-- code + an automated test for the new functionality.
-- results of trying it in production.
-
-If your proposal is aligned with the project's goals, I'll gladly consider it!
